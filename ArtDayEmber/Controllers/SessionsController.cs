@@ -61,6 +61,7 @@ namespace ArtDayEmber.Controllers
         }
 
         // PUT: api/Sessions/5
+        // Updates an existing session
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutSession(int id, Session session)
         {
@@ -94,18 +95,31 @@ namespace ArtDayEmber.Controllers
         }
 
         // POST: api/Sessions
+        // Creates a new session
         [ResponseType(typeof(Session))]
-        public async Task<IHttpActionResult> PostSession(Session session)
+        public async Task<HttpResponseMessage> PostSession(Session session)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return this.Request.CreateResponse(HttpStatusCode.BadRequest);
             }
 
             db.Sessions.Add(session);
             await db.SaveChangesAsync();
 
-            return CreatedAtRoute("DefaultApi", new { id = session.id }, session);
+            // Ember expects the POST result to contain json in an array - so we use a list.
+            
+            var temp = new {
+                id = session.id,
+                sessionName = session.sessionName,
+                instructorName = session.instructorName,
+                capacity = session.capacity,
+                description = session.description,
+                location = session.location,
+                imageUrl = session.imageUrl
+                };
+            
+            return this.Request.CreateResponse(HttpStatusCode.Created, new { session = temp });
         }
 
         // DELETE: api/Sessions/5
