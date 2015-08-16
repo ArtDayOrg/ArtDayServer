@@ -14,6 +14,7 @@ using System.Web.Http.Cors;
 using Newtonsoft.Json;
 using System.Web.Http.Results;
 using System.IO;
+using System.Net.Http.Formatting;
 
 namespace ArtDayEmber.Controllers
 {
@@ -46,9 +47,10 @@ namespace ArtDayEmber.Controllers
         public async Task<HttpResponseMessage> GetStudent(int id)
         {
             Student student = await db.Students.FindAsync(id);
+
             if (student == null)
             {
-                return this.Request.CreateErrorResponse(HttpStatusCode.NotFound, "Student not found");
+                return this.Request.CreateResponse(HttpStatusCode.NotFound, new { message = "That student does not exist." }, new JsonMediaTypeFormatter());
             }
 
             var result = new

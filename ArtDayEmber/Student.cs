@@ -17,6 +17,7 @@ namespace ArtDayEmber
         public Student()
         {
             this.Preferences = new HashSet<Preference>();
+            this.Enrollments = new HashSet<Enrollment>();
         }
     
         public int id { get; set; }
@@ -26,5 +27,6 @@ namespace ArtDayEmber
         public Nullable<bool> locked { get; set; }
     
         public virtual ICollection<Preference> Preferences { get; set; }
+        public virtual ICollection<Enrollment> Enrollments { get; set; }
     }
 }

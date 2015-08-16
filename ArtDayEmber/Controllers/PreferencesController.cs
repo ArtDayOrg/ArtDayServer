@@ -11,6 +11,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using ArtDayEmber;
 using System.Web.Http.Cors;
+using System.Net.Http.Formatting;
 
 namespace ArtDayEmber.Controllers
 {
@@ -41,6 +42,11 @@ namespace ArtDayEmber.Controllers
         {
             // Doing this prevents circular reference
             Preference pref = await db.Preferences.FindAsync(id);
+
+            if (pref == null)
+            {
+                return this.Request.CreateResponse(HttpStatusCode.NotFound, new { message = "That preference does not exist." }, new JsonMediaTypeFormatter());
+            }
 
             var prefResult = new
             {

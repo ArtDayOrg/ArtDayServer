@@ -28,5 +28,6 @@ namespace ArtDayEmber
         public virtual DbSet<Session> Sessions { get; set; }
         public virtual DbSet<Preference> Preferences { get; set; }
         public virtual DbSet<Student> Students { get; set; }
+        public virtual DbSet<Enrollment> Enrollments { get; set; }
     }
 }

@@ -5,6 +5,15 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="ArtDayDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Enrollment">
+          <Key>
+            <PropertyRef Name="EnrollmentID" />
+          </Key>
+          <Property Name="EnrollmentID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SessionID" Type="int" Nullable="false" />
+          <Property Name="StudentID" Type="int" Nullable="false" />
+          <Property Name="Period" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="Preference">
           <Key>
             <PropertyRef Name="PreferenceID" />
@@ -36,6 +45,34 @@
           <Property Name="grade" Type="int" Nullable="false" />
           <Property Name="locked" Type="bit" />
         </EntityType>
+        <Association Name="FK_dbo_Enrollment_dbo_Session_SessionID">
+          <End Role="Session" Type="Self.Session" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Enrollment" Type="Self.Enrollment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Session">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Enrollment">
+              <PropertyRef Name="SessionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_Enrollment_dbo_Student_StudentID">
+          <End Role="Student" Type="Self.Student" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Enrollment" Type="Self.Enrollment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Student">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Enrollment">
+              <PropertyRef Name="StudentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_dbo_Preference_dbo_Session_SessionID">
           <End Role="Session" Type="Self.Session" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -65,9 +102,18 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="ArtDayDBModelStoreContainer">
+          <EntitySet Name="Enrollment" EntityType="Self.Enrollment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Preference" EntityType="Self.Preference" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Session" EntityType="Self.Session" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Student" EntityType="Self.Student" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_dbo_Enrollment_dbo_Session_SessionID" Association="Self.FK_dbo_Enrollment_dbo_Session_SessionID">
+            <End Role="Session" EntitySet="Session" />
+            <End Role="Enrollment" EntitySet="Enrollment" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_Enrollment_dbo_Student_StudentID" Association="Self.FK_dbo_Enrollment_dbo_Student_StudentID">
+            <End Role="Student" EntitySet="Student" />
+            <End Role="Enrollment" EntitySet="Enrollment" />
+          </AssociationSet>
           <AssociationSet Name="FK_dbo_Preference_dbo_Session_SessionID" Association="Self.FK_dbo_Preference_dbo_Session_SessionID">
             <End Role="Session" EntitySet="Session" />
             <End Role="Preference" EntitySet="Preference" />
@@ -93,6 +139,7 @@
           <Property Name="location" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Preferences" Relationship="ArtDayDBModel.FK_dbo_Preference_dbo_Session_SessionID" FromRole="Session" ToRole="Preference" />
           <Property Name="imageUrl" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Enrollments" Relationship="ArtDayDBModel.FK_dbo_Enrollment_dbo_Session_SessionID" FromRole="Session" ToRole="Enrollment" />
         </EntityType>
         <EntityContainer Name="ArtDayDBEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Sessions" EntityType="Self.Session" />
@@ -105,6 +152,15 @@
           <AssociationSet Name="FK_dbo_Preference_dbo_Student_StudentID" Association="ArtDayDBModel.FK_dbo_Preference_dbo_Student_StudentID">
             <End Role="Student" EntitySet="Students" />
             <End Role="Preference" EntitySet="Preferences" />
+          </AssociationSet>
+          <EntitySet Name="Enrollments" EntityType="ArtDayDBModel.Enrollment" />
+          <AssociationSet Name="FK_dbo_Enrollment_dbo_Session_SessionID" Association="ArtDayDBModel.FK_dbo_Enrollment_dbo_Session_SessionID">
+            <End Role="Session" EntitySet="Sessions" />
+            <End Role="Enrollment" EntitySet="Enrollments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_Enrollment_dbo_Student_StudentID" Association="ArtDayDBModel.FK_dbo_Enrollment_dbo_Student_StudentID">
+            <End Role="Student" EntitySet="Students" />
+            <End Role="Enrollment" EntitySet="Enrollments" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Preference">
@@ -142,6 +198,7 @@
           <Property Name="grade" Type="Int32" Nullable="false" />
           <Property Name="locked" Type="Boolean" />
           <NavigationProperty Name="Preferences" Relationship="ArtDayDBModel.FK_dbo_Preference_dbo_Student_StudentID" FromRole="Student" ToRole="Preference" />
+          <NavigationProperty Name="Enrollments" Relationship="ArtDayDBModel.FK_dbo_Enrollment_dbo_Student_StudentID" FromRole="Student" ToRole="Enrollment" />
         </EntityType>
         <Association Name="FK_dbo_Preference_dbo_Student_StudentID">
           <End Type="ArtDayDBModel.Student" Role="Student" Multiplicity="1">
@@ -153,6 +210,45 @@
               <PropertyRef Name="id" />
             </Principal>
             <Dependent Role="Preference">
+              <PropertyRef Name="StudentID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Enrollment">
+          <Key>
+            <PropertyRef Name="EnrollmentID" />
+          </Key>
+          <Property Name="EnrollmentID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SessionID" Type="Int32" Nullable="false" />
+          <Property Name="StudentID" Type="Int32" Nullable="false" />
+          <Property Name="Period" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Session" Relationship="ArtDayDBModel.FK_dbo_Enrollment_dbo_Session_SessionID" FromRole="Enrollment" ToRole="Session" />
+          <NavigationProperty Name="Student" Relationship="ArtDayDBModel.FK_dbo_Enrollment_dbo_Student_StudentID" FromRole="Enrollment" ToRole="Student" />
+        </EntityType>
+        <Association Name="FK_dbo_Enrollment_dbo_Session_SessionID">
+          <End Type="ArtDayDBModel.Session" Role="Session" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="ArtDayDBModel.Enrollment" Role="Enrollment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Session">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Enrollment">
+              <PropertyRef Name="SessionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_Enrollment_dbo_Student_StudentID">
+          <End Type="ArtDayDBModel.Student" Role="Student" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="ArtDayDBModel.Enrollment" Role="Enrollment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Student">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Enrollment">
               <PropertyRef Name="StudentID" />
             </Dependent>
           </ReferentialConstraint>
@@ -194,6 +290,16 @@
                 <ScalarProperty Name="lastname" ColumnName="lastname" />
                 <ScalarProperty Name="firstname" ColumnName="firstname" />
                 <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Enrollments">
+            <EntityTypeMapping TypeName="ArtDayDBModel.Enrollment">
+              <MappingFragment StoreEntitySet="Enrollment">
+                <ScalarProperty Name="Period" ColumnName="Period" />
+                <ScalarProperty Name="StudentID" ColumnName="StudentID" />
+                <ScalarProperty Name="SessionID" ColumnName="SessionID" />
+                <ScalarProperty Name="EnrollmentID" ColumnName="EnrollmentID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -173,9 +173,13 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ArtDayModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Controllers\EnrollmentsController.cs" />
     <Compile Include="Controllers\PreferencesController.cs" />
     <Compile Include="Controllers\SessionsController.cs" />
     <Compile Include="Controllers\StudentsController.cs" />
+    <Compile Include="Enrollment.cs">
+      <DependentUpon>ArtDayModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

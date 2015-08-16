@@ -10,6 +10,19 @@
         <AssociationConnector Association="ArtDayDBModel.FK_dbo_Preference_dbo_Session_SessionID" />
         <EntityTypeShape EntityType="ArtDayDBModel.Student" Width="1.5" PointX="6.5" PointY="0.75" />
         <AssociationConnector Association="ArtDayDBModel.FK_dbo_Preference_dbo_Student_StudentID" />
+        <EntityTypeShape EntityType="ArtDayDBModel.Enrollment" Width="1.5" PointX="3.5" PointY="3.25" />
+        <AssociationConnector Association="ArtDayDBModel.FK_dbo_Enrollment_dbo_Session_SessionID" ManuallyRouted="true" >
+          <ConnectorPoint PointX="2.25" PointY="2.5446065848214285" />
+          <ConnectorPoint PointX="2.8333333333333335" PointY="2.5446065848214285" />
+          <ConnectorPoint PointX="2.8333333333333335" PointY="4.3334517578125" />
+          <ConnectorPoint PointX="3.5" PointY="4.3334517578125" />
+        </AssociationConnector>
+        <AssociationConnector Association="ArtDayDBModel.FK_dbo_Enrollment_dbo_Student_StudentID" ManuallyRouted="true" >
+          <ConnectorPoint PointX="6.5" PointY="2.1018143104309361" />
+          <ConnectorPoint PointX="6.125" PointY="2.1018143104309361" />
+          <ConnectorPoint PointX="6.125" PointY="4.3868201729910705" />
+          <ConnectorPoint PointX="5" PointY="4.3868201729910705" />
+        </AssociationConnector>
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
