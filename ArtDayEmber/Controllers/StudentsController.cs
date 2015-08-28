@@ -32,11 +32,12 @@ namespace ArtDayEmber.Controllers
                 s => new
                 {
                     id = s.id,
-                    firstname = s.firstname,
-                    lastname = s.lastname,
+                    firstName = s.firstName,
+                    lastName = s.lastName,
                     grade = s.grade,
                     locked = s.locked,
-                    preferences = s.Preferences.Select(p => p.PreferenceID).ToList()
+                    preferences = s.Preferences.Select(p => p.PreferenceID).ToList(),
+                    enrollments = s.Enrollments.Select(p => p.EnrollmentID).ToList()
                 }).ToList();
 
             return this.Request.CreateResponse(HttpStatusCode.OK, new {students = result});
@@ -56,11 +57,12 @@ namespace ArtDayEmber.Controllers
             var result = new
             {
                 id = student.id,
-                firstname = student.firstname,
-                lastname = student.lastname,
+                firstName = student.firstName,
+                lastName = student.lastName,
                 grade = student.grade,
                 locked = student.locked,
-                preferences = student.Preferences.Select(p => p.PreferenceID).ToList()
+                preferences = student.Preferences.Select(p => p.PreferenceID).ToList(),
+                enrollments = student.Enrollments.Select(p => p.EnrollmentID).ToList()
             };
 
             return this.Request.CreateResponse(HttpStatusCode.OK, new { student = result });

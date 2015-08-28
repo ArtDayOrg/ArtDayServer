@@ -21,10 +21,10 @@ namespace ArtDayEmber
         }
     
         public int id { get; set; }
-        public string firstname { get; set; }
-        public string lastname { get; set; }
         public int grade { get; set; }
         public Nullable<bool> locked { get; set; }
+        public string firstName { get; set; }
+        public string lastName { get; set; }
     
         public virtual ICollection<Preference> Preferences { get; set; }
         public virtual ICollection<Enrollment> Enrollments { get; set; }

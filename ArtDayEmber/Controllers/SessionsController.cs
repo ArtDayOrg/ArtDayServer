@@ -33,7 +33,9 @@ namespace ArtDayEmber.Controllers
                     sessionName = s.sessionName,
                     location = s.location,
                     imageUrl = s.imageUrl,
-                    preferences = s.Preferences.Select(p => p.PreferenceID).ToList()
+                    instructions = s.instructions,
+                    preferences = s.Preferences.Select(p => p.PreferenceID).ToList(),
+                    enrollments = s.Enrollments.Select(p => p.EnrollmentID).ToList()
                 }).ToList();
 
             return this.Request.CreateResponse(HttpStatusCode.OK, new { sessions = result });
@@ -54,7 +56,9 @@ namespace ArtDayEmber.Controllers
                     sessionName = s.sessionName,
                     location = s.location,
                     imageUrl = s.imageUrl,
-                    preferences = s.Preferences.Select(p => p.PreferenceID).ToList()
+                    instructions = s.instructions,
+                    preferences = s.Preferences.Select(p => p.PreferenceID).ToList(),
+                    enrollments = s.Enrollments.Select(p => p.EnrollmentID).ToList()
                 }).Where(s => s.id == id);
 
             return this.Request.CreateResponse(HttpStatusCode.OK, new { session = result });
@@ -116,7 +120,8 @@ namespace ArtDayEmber.Controllers
                 capacity = session.capacity,
                 description = session.description,
                 location = session.location,
-                imageUrl = session.imageUrl
+                imageUrl = session.imageUrl,
+                instructions = session.instructions
                 };
             
             return this.Request.CreateResponse(HttpStatusCode.Created, new { session = temp });

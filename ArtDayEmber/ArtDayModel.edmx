@@ -34,14 +34,15 @@
           <Property Name="description" Type="nvarchar(max)" />
           <Property Name="location" Type="nvarchar(max)" />
           <Property Name="imageUrl" Type="nvarchar(max)" />
+          <Property Name="instructions" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="Student">
           <Key>
             <PropertyRef Name="id" />
           </Key>
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="firstname" Type="nvarchar(max)" />
-          <Property Name="lastname" Type="nvarchar(max)" />
+          <Property Name="firstName" Type="nvarchar(max)" />
+          <Property Name="lastName" Type="nvarchar(max)" />
           <Property Name="grade" Type="int" Nullable="false" />
           <Property Name="locked" Type="bit" />
         </EntityType>
@@ -140,6 +141,7 @@
           <NavigationProperty Name="Preferences" Relationship="ArtDayDBModel.FK_dbo_Preference_dbo_Session_SessionID" FromRole="Session" ToRole="Preference" />
           <Property Name="imageUrl" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Enrollments" Relationship="ArtDayDBModel.FK_dbo_Enrollment_dbo_Session_SessionID" FromRole="Session" ToRole="Enrollment" />
+          <Property Name="instructions" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityContainer Name="ArtDayDBEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Sessions" EntityType="Self.Session" />
@@ -193,12 +195,12 @@
             <PropertyRef Name="id" />
           </Key>
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="firstname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="lastname" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="grade" Type="Int32" Nullable="false" />
           <Property Name="locked" Type="Boolean" />
           <NavigationProperty Name="Preferences" Relationship="ArtDayDBModel.FK_dbo_Preference_dbo_Student_StudentID" FromRole="Student" ToRole="Preference" />
           <NavigationProperty Name="Enrollments" Relationship="ArtDayDBModel.FK_dbo_Enrollment_dbo_Student_StudentID" FromRole="Student" ToRole="Enrollment" />
+          <Property Name="firstName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="lastName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_dbo_Preference_dbo_Student_StudentID">
           <End Type="ArtDayDBModel.Student" Role="Student" Multiplicity="1">
@@ -262,6 +264,7 @@
           <EntitySetMapping Name="Sessions">
             <EntityTypeMapping TypeName="ArtDayDBModel.Session">
               <MappingFragment StoreEntitySet="Session">
+                <ScalarProperty Name="instructions" ColumnName="instructions" />
                 <ScalarProperty Name="imageUrl" ColumnName="imageUrl" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="sessionName" ColumnName="sessionName" />
@@ -285,10 +288,10 @@
           <EntitySetMapping Name="Students">
             <EntityTypeMapping TypeName="ArtDayDBModel.Student">
               <MappingFragment StoreEntitySet="Student">
+                <ScalarProperty Name="lastName" ColumnName="lastName" />
+                <ScalarProperty Name="firstName" ColumnName="firstName" />
                 <ScalarProperty Name="locked" ColumnName="locked" />
                 <ScalarProperty Name="grade" ColumnName="grade" />
-                <ScalarProperty Name="lastname" ColumnName="lastname" />
-                <ScalarProperty Name="firstname" ColumnName="firstname" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

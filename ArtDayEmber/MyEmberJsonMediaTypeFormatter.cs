@@ -15,7 +15,7 @@ namespace ArtDayEmber
 {
     public class MyEmberJsonMediaTypeFormatter : JsonMediaTypeFormatter
     {
-        private int _maxDepth = 256;
+        //private int _maxDepth = 256;
         private JsonSerializerSettings _jsonSerializerSettings;
         public MyEmberJsonMediaTypeFormatter()
         {

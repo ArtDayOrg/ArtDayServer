@@ -27,6 +27,7 @@ namespace ArtDayEmber
         public string description { get; set; }
         public string location { get; set; }
         public string imageUrl { get; set; }
+        public string instructions { get; set; }
     
         public virtual ICollection<Preference> Preferences { get; set; }
         public virtual ICollection<Enrollment> Enrollments { get; set; }
