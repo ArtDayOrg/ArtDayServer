@@ -1,17 +1,21 @@
-﻿using System;
+﻿using FastMember;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Description;
-using ArtDayEmber;
 using System.Web.Http.Cors;
-using System.Net.Http.Formatting;
+using System.Web.Http.Description;
 
 namespace ArtDayEmber.Controllers
 {
@@ -96,34 +100,60 @@ namespace ArtDayEmber.Controllers
 
         // POST: api/Enrollments
         [ResponseType(typeof(Preference))]
-        public async Task<IHttpActionResult> PostEnrollment(Enrollment enrollment)
+        public async Task<HttpResponseMessage> PostEnrollment()
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
+            // TODO: Uncomment sql commands before going live.
+            // Before adding new students, first delete all enrollments, prefs and students.
+            //db.Database.ExecuteSqlCommand("delete from preference");
+            //db.Database.ExecuteSqlCommand("delete from enrollment");
+            //db.Database.ExecuteSqlCommand("delete from student");
+
+            string body = await Request.Content.ReadAsStringAsync();
+            List<Enrollment> enrollments = JsonConvert.DeserializeObject<List<Enrollment>>(body);
+                        
+            DataTable table = new DataTable();
+            
+            using(var reader = ObjectReader.Create(enrollments)) {
+                table.Load(reader);
             }
-
-            db.Enrollments.Add(enrollment);
-
-            try
+            table.Columns.Remove("Student");
+            table.Columns.Remove("Session");
+            table.Columns.Remove("EnrollmentId");
+            
+            string cnString = ConfigurationManager.ConnectionStrings["cnString"].ConnectionString;
+            using (SqlConnection destinationConnection = new SqlConnection(cnString))
             {
-                await db.SaveChangesAsync();
+                destinationConnection.Open();
+                using (SqlBulkCopy bulkCopy = new SqlBulkCopy(destinationConnection))
+                {
+                    bulkCopy.DestinationTableName = "Enrollment";
+                    
+                    SqlBulkCopyColumnMapping studentMap = new SqlBulkCopyColumnMapping("studentId", "StudentID");
+                    bulkCopy.ColumnMappings.Add(studentMap);
+
+                    SqlBulkCopyColumnMapping sessionMap = new SqlBulkCopyColumnMapping("sessionId", "SessionID");
+                    bulkCopy.ColumnMappings.Add(sessionMap);
+
+                    SqlBulkCopyColumnMapping periodMap = new SqlBulkCopyColumnMapping("period", "Period");
+                    bulkCopy.ColumnMappings.Add(periodMap);
+                    
+                    try
+                    {
+                        bulkCopy.WriteToServer(table);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Write(ex.Message);
+                    }                    
+                }
             }
-            catch (DbUpdateException ex)
-            {
-                Console.WriteLine(ex.Message);
-                throw ex;
-            }
+            
 
-            var enrollResult = new
-            {
-                id = enrollment.EnrollmentID,
-                period = enrollment.Period,
-                session = enrollment.SessionID,
-                student = enrollment.StudentID
-            };
+            // this is very slow:
+            // db.Enrollments.AddRange(enrollments);
+            // await db.SaveChangesAsync();  // save changes once.  Hopefully this makes a single db call.
 
-            return CreatedAtRoute("DefaultApi", new { id = enrollment.EnrollmentID }, new { enrollment = enrollResult });
+            return this.Request.CreateResponse(HttpStatusCode.Created);
         }
 
         // DELETE: api/Enrollments/5
