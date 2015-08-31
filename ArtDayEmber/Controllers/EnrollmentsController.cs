@@ -119,8 +119,8 @@ namespace ArtDayEmber.Controllers
             table.Columns.Remove("Student");
             table.Columns.Remove("Session");
             table.Columns.Remove("EnrollmentId");
-            
-            string cnString = ConfigurationManager.ConnectionStrings["cnString"].ConnectionString;
+
+            string cnString = ConfigurationManager.ConnectionStrings["ArtDayConnection"].ConnectionString;
             using (SqlConnection destinationConnection = new SqlConnection(cnString))
             {
                 destinationConnection.Open();
