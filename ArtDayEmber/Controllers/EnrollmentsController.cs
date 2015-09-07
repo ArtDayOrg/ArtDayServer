@@ -98,16 +98,10 @@ namespace ArtDayEmber.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Enrollments
+        // POST: api/Enrollments/PostEnrollment
         [ResponseType(typeof(Preference))]
         public async Task<HttpResponseMessage> PostEnrollment()
         {
-            // TODO: Uncomment sql commands before going live.
-            // Before adding new students, first delete all enrollments, prefs and students.
-            //db.Database.ExecuteSqlCommand("delete from preference");
-            //db.Database.ExecuteSqlCommand("delete from enrollment");
-            //db.Database.ExecuteSqlCommand("delete from student");
-
             string body = await Request.Content.ReadAsStringAsync();
             List<Enrollment> enrollments = JsonConvert.DeserializeObject<List<Enrollment>>(body);
                         

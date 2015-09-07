@@ -15,6 +15,10 @@ using Newtonsoft.Json;
 using System.Web.Http.Results;
 using System.IO;
 using System.Net.Http.Formatting;
+using FastMember;
+using System.Configuration;
+using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace ArtDayEmber.Controllers
 {
@@ -108,25 +112,51 @@ namespace ArtDayEmber.Controllers
         // This is the method called when importing a new set of students.
         // Only available to admins.  Should be called only once using the current student list
         // just before opening the site to pref setting.
-        // Danger - will delete all existing students, prefs and enrollments.
         [ResponseType(typeof(void))]
         public async Task<HttpResponseMessage> PostStudent()
-        {            
-            // TODO: Uncomment sql commands before going live.
-            // Before adding new students, first delete all enrollments, prefs and students.
-            //db.Database.ExecuteSqlCommand("delete from preference");
-            //db.Database.ExecuteSqlCommand("delete from enrollment");
-            //db.Database.ExecuteSqlCommand("delete from student");
-
+        {
             string body = await Request.Content.ReadAsStringAsync();
             List<Student> students = JsonConvert.DeserializeObject<List<Student>>(body);
 
-            foreach (var student in students)
+            DataTable table = new DataTable();
+
+            using (var reader = ObjectReader.Create(students))
             {
-                db.Students.Add(student);
+                table.Load(reader);
             }
-            
-            await db.SaveChangesAsync();  // save changes once.  Hopefully this makes a single db call.
+            table.Columns.Remove("Preferences");
+            table.Columns.Remove("Enrollments");
+
+            string cnString = ConfigurationManager.ConnectionStrings["ArtDayConnection"].ConnectionString;
+            using (SqlConnection destinationConnection = new SqlConnection(cnString))
+            {
+                destinationConnection.Open();
+                using (SqlBulkCopy bulkCopy = new SqlBulkCopy(destinationConnection))
+                {
+                    bulkCopy.DestinationTableName = "Student";
+
+                    SqlBulkCopyColumnMapping firstNameMap = new SqlBulkCopyColumnMapping("firstName", "firstName");
+                    bulkCopy.ColumnMappings.Add(firstNameMap);
+
+                    SqlBulkCopyColumnMapping lastNameMap = new SqlBulkCopyColumnMapping("lastName", "lastName");
+                    bulkCopy.ColumnMappings.Add(lastNameMap);
+
+                    SqlBulkCopyColumnMapping gradeMap = new SqlBulkCopyColumnMapping("grade", "grade");
+                    bulkCopy.ColumnMappings.Add(gradeMap);
+
+                    SqlBulkCopyColumnMapping lockedMap = new SqlBulkCopyColumnMapping("locked", "locked");
+                    bulkCopy.ColumnMappings.Add(lockedMap);
+
+                    try
+                    {
+                        bulkCopy.WriteToServer(table);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Write(ex.Message);
+                    }
+                }
+            }
 
             return this.Request.CreateResponse(HttpStatusCode.Created);
         }
