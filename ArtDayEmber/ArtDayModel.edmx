@@ -33,7 +33,6 @@
           <Property Name="capacity" Type="int" Nullable="false" />
           <Property Name="description" Type="nvarchar(max)" />
           <Property Name="location" Type="nvarchar(max)" />
-          <Property Name="imageUrl" Type="nvarchar(max)" />
           <Property Name="instructions" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="Student">
@@ -139,7 +138,6 @@
           <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="location" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Preferences" Relationship="ArtDayDBModel.FK_dbo_Preference_dbo_Session_SessionID" FromRole="Session" ToRole="Preference" />
-          <Property Name="imageUrl" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Enrollments" Relationship="ArtDayDBModel.FK_dbo_Enrollment_dbo_Session_SessionID" FromRole="Session" ToRole="Enrollment" />
           <Property Name="instructions" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
@@ -265,7 +263,6 @@
             <EntityTypeMapping TypeName="ArtDayDBModel.Session">
               <MappingFragment StoreEntitySet="Session">
                 <ScalarProperty Name="instructions" ColumnName="instructions" />
-                <ScalarProperty Name="imageUrl" ColumnName="imageUrl" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="sessionName" ColumnName="sessionName" />
                 <ScalarProperty Name="instructorName" ColumnName="instructorName" />

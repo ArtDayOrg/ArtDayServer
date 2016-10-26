@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Description;
-using ArtDayEmber;
 using System.Web.Http.Cors;
+using System.Web.Http.Description;
 
 namespace ArtDayEmber.Controllers
 {
@@ -23,7 +19,7 @@ namespace ArtDayEmber.Controllers
         public HttpResponseMessage GetSessions()
         {
             // Doing this prevents circular reference from session -> preference -> session -> preference...
-            var result = db.Sessions.Select(
+            var sessions = db.Sessions.Select(
                 s => new
                 {
                     id = s.id,
@@ -32,13 +28,14 @@ namespace ArtDayEmber.Controllers
                     instructorName = s.instructorName,
                     sessionName = s.sessionName,
                     location = s.location,
-                    imageUrl = s.imageUrl,
                     instructions = s.instructions,
                     preferences = s.Preferences.Select(p => p.PreferenceID).ToList(),
                     enrollments = s.Enrollments.Select(p => p.EnrollmentID).ToList()
                 }).ToList();
 
-            return this.Request.CreateResponse(HttpStatusCode.OK, new { sessions = result });
+            HttpResponseMessage msg = this.Request.CreateResponse(HttpStatusCode.OK, new { sessions = sessions });
+
+            return msg;
         }
 
         // GET: api/Sessions/5
@@ -54,8 +51,7 @@ namespace ArtDayEmber.Controllers
                     description = s.description,
                     instructorName = s.instructorName,
                     sessionName = s.sessionName,
-                    location = s.location,
-                    imageUrl = s.imageUrl,
+                    location = s.location,                    
                     instructions = s.instructions,
                     preferences = s.Preferences.Select(p => p.PreferenceID).ToList(),
                     enrollments = s.Enrollments.Select(p => p.EnrollmentID).ToList()
@@ -120,7 +116,6 @@ namespace ArtDayEmber.Controllers
                 capacity = session.capacity,
                 description = session.description,
                 location = session.location,
-                imageUrl = session.imageUrl,
                 instructions = session.instructions
                 };
             
@@ -142,6 +137,8 @@ namespace ArtDayEmber.Controllers
 
             return Ok(session);
         }
+
+
 
         protected override void Dispose(bool disposing)
         {
